@@ -1,0 +1,4 @@
+interface:
+  display_name: "Buffett Investing Coach"
+  short_description: "Corpus-backed Buffett-style investing agent for business quality, valuation, watchlists, and teaching."
+  default_prompt: "Use $buffett-investing-coach as a corpus-backed Buffett-style owner-analyst: analyze business quality, price status, margin of safety, watchlist triggers, and teach the reasoning."

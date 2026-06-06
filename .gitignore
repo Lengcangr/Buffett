@@ -1,0 +1,31 @@
+﻿# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Python / JS caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+node_modules/
+.npm-cache/
+
+# Local generated/cached data
+corpus/
+price_cache/
+companyfacts_cache/
+data/
+dist/
+build/
+.tmp/
+tmp/
+*.log
+
+# Secrets
+.env
+.env.*
+*.pem
+*.key
+*token*
+*secret*
