@@ -17,6 +17,7 @@ Choose the smallest mode that answers the user:
 
 - **Quick screen**: preliminary triage only. Sort companies into `worth deeper underwriting`, `watchlist quality`, `too hard`, or `likely weak / value-trap risk`. Do not turn a quick screen into a "best buy now" list.
 - **Full memo**: write an advanced underwriting memo only when the security is clear and the evidence depth supports it. For novice users, adapt this into a teaching-first memo rather than a decision-ready memo.
+- **Deep HTML report**: create a layered single-company research file for learning and investor follow-up. Use a long-document layout with side navigation, source audit, peer comparison, industry-specific checks, valuation scenarios, and an investor action panel.
 - **Teaching mode**: explain the Buffett principle, show how evidence maps to it, and train the user to reason like an owner.
 - **Corpus mode**: build, update, or query the Buffett corpus using local scripts and source rules.
 - **Watchlist mode**: preserve high-quality but expensive businesses, define the price/evidence that would make them interesting later.
@@ -30,6 +31,8 @@ Load only what the task needs:
 
 - `references/research-playbook.md` when the user names a company, ticker, market, sector, or security.
 - `references/memo-template.md` before writing a company memo or final report.
+- `references/deep-html-report-template.md` before planning, writing, or updating a deep single-company HTML report.
+- `references/industry-report-templates.md` before writing a deep report; choose the matching industry template for AI power, semiconductors, software, consumer, financials, or healthcare.
 - `references/source-index.md` when choosing sources or checking where to find filings, letters, market data, or disclosures.
 - `references/corpus-usage-policy.md` when relying on Buffett source material, local corpus files, books, transcripts, video/audio, or exact attributions.
 - `references/buffett-corpus-map.md` when building, importing, validating, or querying the local Buffett corpus.
@@ -57,8 +60,22 @@ Load only what the task needs:
 7. **Separate quality from price**: first decide whether the business is wonderful, good, cyclical, weak, or too hard. Then separately decide whether the current price offers a visible margin of safety.
 8. **Preserve watchlist value**: if the business is high quality but expensive, do not discard it. Define the lower price, higher owner earnings, improved cash conversion, reduced risk, or better evidence that would make it attractive later.
 9. **Teach before conclusion for outsiders**: if the user is an outsider, lead with business understanding, the principle being applied, the novice trap, and the missing evidence before any conclusion label.
-10. **Write the memo**: use `memo-template.md`. Include evidence, counterarguments, missing information, price status, watchlist triggers, re-underwriting triggers, and a principle-level conclusion.
+10. **Write the memo or report**: use `memo-template.md` for normal memos. For deep single-company HTML reports, also use `deep-html-report-template.md` and `industry-report-templates.md`. Include evidence, counterarguments, missing information, price status, watchlist triggers, re-underwriting triggers, and a principle-level conclusion.
 11. **Refuse false precision**: when facts are missing, price data is stale, sector-specific metrics are unavailable, or the company is too complex, say so. The Buffett-style answer may be "too hard," "watchlist only," or "not enough margin of safety."
+
+## Deep HTML Report Workflow
+
+Use this workflow when the user asks for a deep HTML report, a durable company file, an investor learning file, or says the current HTML feels too thin.
+
+1. Load `references/deep-html-report-template.md`.
+2. Load `references/industry-report-templates.md` and select one industry template before drafting the report. If the company spans multiple industries, choose the primary economic driver and add a short secondary-industry note.
+3. Use a 5-year review by default. Extend toward 10 years only when cyclicality, leverage, major acquisitions, or industry cycles make a 5-year view misleading.
+4. Write the report as a long-form research document with side navigation, not as a dashboard or marketing page.
+5. Teach in layers: plain-language business understanding first, then industry economics, then financial evidence, then valuation and follow-up actions.
+6. Include a fixed peer comparison section with 3-5 relevant peers or substitutes. If direct peers are weak matches, explain the comparison limitation.
+7. Include a fixed investor action panel: watchlist status, evidence to verify, price/evidence triggers, thesis-breaking signals, and next review date.
+8. Keep evidence balanced: every material conclusion needs a source, but do not dump raw data that does not change the judgment.
+9. Apply the HTML Report Verification Gate before claiming the report is complete.
 
 ## Corpus Workflow
 

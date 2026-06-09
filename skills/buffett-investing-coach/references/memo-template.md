@@ -2,6 +2,8 @@
 
 Use this template for final company analysis. Keep it evidence-driven and teach the user the logic. This template is for productive operating businesses and analyzable holding companies, not for options, leveraged wrappers, crypto assets, SPACs, or other non-operating instruments.
 
+For deep single-company HTML reports, also load `deep-html-report-template.md` and `industry-report-templates.md`. A deep HTML report is not a longer executive summary. It must teach the business from zero, show the industry economics, compare peers, explain valuation in scenarios, and end with an investor action panel for future tracking.
+
 ## 0. Ordinary-User Safety Box
 
 Include this section whenever the user is new, asks for a direct buy/sell answer, asks about concentration, or already owns the security:
@@ -29,6 +31,12 @@ Hard rule for outsider-facing work:
 - Top three reasons the conclusion could be wrong.
 - For outsider-facing work, state what must still be verified before the conclusion can support action.
 
+For deep reports, replace a compressed executive-first opening with a layered opening:
+
+- First screen: company identity, data cutoff, report purpose, and safety box.
+- Second screen: one-page company map.
+- Only after business understanding: price-status and principle-level conclusion.
+
 ## 2. Source Audit
 
 Create a compact table:
@@ -48,6 +56,13 @@ Explain:
 - Cyclicality, regulation, and technology exposure.
 - Whether the business is inside, edge, or outside a reasonable circle of competence.
 - Whether the security being analyzed cleanly represents the business the user thinks they are buying.
+
+For deep reports, teach in layers:
+
+- Plain-language business model.
+- Industry value chain and profit pool.
+- Unit economics and pricing model.
+- What must be true for the company to compound owner earnings.
 
 ## 4. Moat And Competitive Position
 
@@ -75,6 +90,8 @@ Cover trends over the selected review period:
 
 If owner earnings cannot be estimated reliably, say why.
 
+For deep reports, use a 5-year default review period and show enough trend evidence for the user to see whether growth is per-share, cash-backed, and balance-sheet-supported.
+
 ## 6. Management And Capital Allocation
 
 Evaluate:
@@ -100,6 +117,15 @@ If current price data is available:
 
 If price data is unavailable or stale, provide business-quality analysis and list the valuation data needed.
 
+For deep reports, use a valuation scenario tree:
+
+- Downside/no-growth case.
+- Base case.
+- Optimistic case.
+- Watchlist trigger case.
+
+Use ranges rather than a single target price. A great business with a high price should remain on the watchlist with explicit price or evidence triggers.
+
 ## 8. Risks And Anti-Thesis
 
 Include:
@@ -109,6 +135,8 @@ Include:
 - Accounting or cash-flow quality concerns.
 - Regulatory, geopolitical, commodity, technology, or customer-concentration risks.
 - A short bear case that a smart skeptical investor would make.
+
+For deep reports, include the strongest smart-bear argument even if the final view is positive. The user should understand what would prove the thesis wrong.
 
 ## 9. Missing Information
 
@@ -123,6 +151,14 @@ List the facts that would require a fresh look:
 - Balance-sheet or governance changes.
 - Customer concentration or product-cycle changes.
 - Events that change whether the company belongs in the watchlist, too-hard pile, or quality bucket.
+
+For deep reports, turn this into a fixed investor action panel:
+
+- Current status.
+- What to verify next.
+- Price/evidence triggers.
+- Thesis-breaking signs.
+- Next review event.
 
 ## 11. Lesson For The User
 
