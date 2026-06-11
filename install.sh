@@ -5,7 +5,7 @@ set -euo pipefail
 AGENT="both"
 REPO="Lengcangr/Buffett"
 REF="main"
-SKILL_NAME="buffett-investing-coach"
+SKILL_NAMES=("buffett-investing-coach" "investment-research-pipeline")
 CODEX_SKILLS_DIR=""
 CLAUDE_SKILLS_DIR=""
 FORCE="0"
@@ -14,9 +14,13 @@ usage() {
   cat <<'EOF'
 Usage: install.sh [--agent codex|claude|both] [--force]
                   [--repo owner/repo] [--ref branch]
-                  [--codex-skills-dir path] [--claude-skills-dir path]
+                  [--skill-name name] [--codex-skills-dir path]
+                  [--claude-skills-dir path]
 
-Installs the Buffett skill into Codex, Claude Code, or both.
+Installs the Buffett investing skills into Codex, Claude Code, or both.
+By default it installs:
+  - buffett-investing-coach
+  - investment-research-pipeline
 EOF
 }
 
@@ -35,7 +39,7 @@ while [[ $# -gt 0 ]]; do
       shift 2
       ;;
     --skill-name)
-      SKILL_NAME="${2:-}"
+      SKILL_NAMES=("${2:-}")
       shift 2
       ;;
     --codex-skills-dir)
@@ -97,42 +101,44 @@ download_cmd() {
   exit 1
 }
 
-local_source=""
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-candidate="${script_dir}/skills/${SKILL_NAME}"
-
-if [[ -f "${candidate}/SKILL.md" ]]; then
-  local_source="$candidate"
-fi
-
+repo_source="$script_dir"
 cleanup_root=""
-if [[ -z "$local_source" ]]; then
+
+needs_download="0"
+for skill_name in "${SKILL_NAMES[@]}"; do
+  if [[ ! -f "${script_dir}/skills/${skill_name}/SKILL.md" ]]; then
+    needs_download="1"
+  fi
+done
+
+if [[ "$needs_download" == "1" ]]; then
   cleanup_root="$(mktemp -d)"
   archive_path="${cleanup_root}/repo.tar.gz"
   extract_root="${cleanup_root}/extract"
   mkdir -p "$extract_root"
   download_cmd "https://github.com/${REPO}/archive/refs/heads/${REF}.tar.gz" "$archive_path"
   tar -xzf "$archive_path" -C "$extract_root"
-  repo_root="$(find "$extract_root" -mindepth 1 -maxdepth 1 -type d | head -n 1)"
-  local_source="${repo_root}/skills/${SKILL_NAME}"
-
-  if [[ ! -f "${local_source}/SKILL.md" ]]; then
-    echo "Could not locate skills/${SKILL_NAME}/SKILL.md in downloaded repository." >&2
-    rm -rf "$cleanup_root"
-    exit 1
-  fi
+  repo_source="$(find "$extract_root" -mindepth 1 -maxdepth 1 -type d | head -n 1)"
 fi
 
 install_target() {
   local target="$1"
   local custom_dir="$2"
-  local skills_dir="$custom_dir"
+  local skill_name="$3"
+  local source_path="${repo_source}/skills/${skill_name}"
 
+  if [[ ! -f "${source_path}/SKILL.md" ]]; then
+    echo "Could not locate skills/${skill_name}/SKILL.md." >&2
+    exit 1
+  fi
+
+  local skills_dir="$custom_dir"
   if [[ -z "$skills_dir" ]]; then
     skills_dir="$(default_skills_dir "$target")"
   fi
 
-  local destination="${skills_dir}/${SKILL_NAME}"
+  local destination="${skills_dir}/${skill_name}"
 
   mkdir -p "$skills_dir"
 
@@ -145,25 +151,29 @@ install_target() {
     rm -rf "$destination"
   fi
 
-  cp -R "$local_source" "$destination"
-  printf 'Installed %s to %s\n' "$SKILL_NAME" "$destination"
+  cp -R "$source_path" "$destination"
+  printf 'Installed %s to %s\n' "$skill_name" "$destination"
 }
 
+targets=()
 case "$AGENT" in
-  codex)
-    install_target "codex" "$CODEX_SKILLS_DIR"
-    ;;
-  claude)
-    install_target "claude" "$CLAUDE_SKILLS_DIR"
-    ;;
-  both)
-    install_target "codex" "$CODEX_SKILLS_DIR"
-    install_target "claude" "$CLAUDE_SKILLS_DIR"
-    ;;
+  codex) targets=("codex") ;;
+  claude) targets=("claude") ;;
+  both) targets=("codex" "claude") ;;
 esac
+
+for skill_name in "${SKILL_NAMES[@]}"; do
+  for target in "${targets[@]}"; do
+    if [[ "$target" == "codex" ]]; then
+      install_target "codex" "$CODEX_SKILLS_DIR" "$skill_name"
+    else
+      install_target "claude" "$CLAUDE_SKILLS_DIR" "$skill_name"
+    fi
+  done
+done
 
 if [[ -n "$cleanup_root" ]]; then
   rm -rf "$cleanup_root"
 fi
 
-printf '\nNext step: restart Codex or Claude Code so the new skill is loaded.\n'
+printf '\nNext step: restart Codex or Claude Code so the new skills are loaded.\n'

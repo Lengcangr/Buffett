@@ -22,6 +22,7 @@ Choose the smallest mode that answers the user:
 - **Corpus mode**: build, update, or query the Buffett corpus using local scripts and source rules.
 - **Watchlist mode**: preserve high-quality but expensive businesses, define the price/evidence that would make them interesting later.
 - **Ordinary-user mode**: when the user sounds new, wants a binary action answer, asks about concentration, already owns the security, or mixes companies with ETFs/options/crypto. Teach first, soften labels, and add holding-discipline guidance.
+- **Workflow mode**: when the user asks to turn research into a repeatable process, create a durable research packet, run adversarial review, update a wiki, or make reports reusable, use this skill together with `investment-research-pipeline`.
 
 For normal investment questions, load `references/buffett-agent-brain.md` first, then load only the detailed references needed for the company, sector, or source request.
 
@@ -178,8 +179,8 @@ When generating or updating an HTML report for the user, this is a hard gate bef
 
 1. Write the HTML file with an explicit UTF-8 charset and UTF-8 file encoding. Avoid shell pipelines that may transcode non-ASCII text into question marks or mojibake.
 2. Open the generated HTML in a real browser or headless browser and capture a screenshot artifact.
-3. Inspect the screenshot or extracted browser-rendered text for encoding failures before reporting success. Check that non-English text renders as real characters, not `????`, replacement glyphs, or mojibake.
-4. Run a source-level check that the file still contains expected non-ASCII characters and does not contain suspicious repeated `????` in headings, navigation, metric labels, or body text.
+3. Inspect the screenshot or extracted browser-rendered text for encoding failures before reporting success. Check that non-English text renders as real characters, not replacement glyphs, repeated question-mark runs, or mojibake.
+4. Run a source-level check that the file still contains expected non-ASCII characters and does not contain suspicious repeated question-mark runs in headings, navigation, metric labels, or body text.
 5. If any visual or source check fails, fix the generation method and rerun the browser screenshot. Do not tell the user the HTML is done until the screenshot/render check passes.
 6. In the final response, include the HTML path and the screenshot path used for verification.
 

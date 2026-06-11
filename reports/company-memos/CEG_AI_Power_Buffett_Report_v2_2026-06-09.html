@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CEG v2 深度研究｜AI 电力基础设施与巴菲特式观察清单</title>
+  <style>
+    :root{--paper:#f4f1e9;--paper2:#ebe5d6;--ink:#17201d;--muted:#61706a;--line:#c8bfaa;--panel:#fffdf7;--panel2:#f8f4e9;--green:#1f5a44;--green2:#dce9df;--amber:#b5792a;--amber2:#f2dfbb;--red:#a33c32;--red2:#f0d6cf;--blue:#255b70;--graphite:#26302d;--shadow:0 26px 70px rgba(34,38,30,.14);--mono:"Cascadia Mono",Consolas,monospace;--serif:"Aptos Serif","Noto Serif SC","Source Han Serif SC","Microsoft YaHei",serif;--sans:"Aptos","Noto Sans SC","Microsoft YaHei",sans-serif}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);font-family:var(--serif);line-height:1.72;background:radial-gradient(circle at 8% 3%,rgba(31,90,68,.14),transparent 30%),radial-gradient(circle at 94% 8%,rgba(181,121,42,.16),transparent 34%),linear-gradient(135deg,var(--paper),var(--paper2))}body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.32;background-image:linear-gradient(rgba(23,32,29,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(23,32,29,.04) 1px,transparent 1px);background-size:44px 44px;mask-image:linear-gradient(90deg,transparent,black 12%,black 88%,transparent)}
+    a{color:var(--blue);text-decoration:none;border-bottom:1px solid rgba(37,91,112,.25)}a:hover{border-bottom-color:currentColor}.shell{max-width:1440px;margin:0 auto;display:grid;grid-template-columns:286px minmax(0,1fr);gap:28px;padding:28px 26px 74px}.rail{position:sticky;top:18px;align-self:start;min-height:calc(100vh - 36px);border:1px solid rgba(23,32,29,.12);border-radius:28px;background:rgba(255,253,247,.82);box-shadow:0 10px 30px rgba(34,38,30,.08);backdrop-filter:blur(10px);padding:22px}.brand{font-family:var(--sans);font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--green);font-size:12px}.rail h2{font-size:25px;line-height:1.08;margin:12px 0 8px}.rail p{font-size:13px;color:var(--muted);margin:0 0 16px}.nav{display:flex;flex-direction:column;gap:6px;margin:16px 0}.nav a{border:0;border-radius:12px;padding:9px 10px;color:var(--graphite);font-family:var(--sans);font-size:13px}.nav a:hover{background:var(--green2);color:var(--green)}.stamp{border:1px dashed rgba(31,90,68,.36);border-radius:18px;padding:12px;background:rgba(219,233,223,.44);font-family:var(--sans);font-size:12px;color:#4d5b58}
+    .hero{position:relative;overflow:hidden;border:1px solid rgba(23,32,29,.12);border-radius:34px;background:linear-gradient(135deg,rgba(255,253,247,.96),rgba(241,236,223,.94));box-shadow:var(--shadow);padding:42px 44px 38px}.hero:after{content:"";position:absolute;right:-100px;top:-120px;width:360px;height:360px;border-radius:50%;background:repeating-linear-gradient(45deg,rgba(181,121,42,.22) 0 2px,transparent 2px 16px);transform:rotate(8deg)}.eyebrow{font-family:var(--sans);font-weight:900;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);position:relative;z-index:1}h1{font-size:clamp(34px,4.5vw,66px);line-height:.98;margin:14px 0 16px;letter-spacing:-.035em;max-width:980px;position:relative;z-index:1}.lede{font-size:18px;color:var(--muted);max-width:980px;margin:0;position:relative;z-index:1}.facts{position:relative;z-index:1;margin-top:28px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}.fact{border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.58);padding:14px 15px;min-height:86px}.fact b{display:block;font-family:var(--sans);font-size:23px;line-height:1.16;color:var(--green)}.fact span{display:block;color:var(--muted);font-family:var(--sans);font-size:12px;margin-top:5px}.status-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px;position:relative;z-index:1}.pill{display:inline-flex;gap:6px;border:1px solid rgba(23,32,29,.16);border-radius:999px;background:rgba(255,255,255,.64);padding:7px 11px;font-family:var(--sans);font-size:12px}.pill strong{color:var(--green)}
+    section{margin-top:24px;border:1px solid rgba(23,32,29,.12);border-radius:28px;background:rgba(255,253,247,.92);box-shadow:0 10px 30px rgba(34,38,30,.08);padding:32px 34px}section h2{margin:0 0 14px;font-size:30px;line-height:1.15;letter-spacing:-.02em}section h3{margin:22px 0 8px;font-size:20px;line-height:1.25;color:var(--green)}p{margin:10px 0}.small{font-size:13px;color:var(--muted)}.kicker{font-family:var(--sans);font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);margin-bottom:8px}.callout{border-left:6px solid var(--green);border-radius:16px;background:var(--green2);padding:16px 18px;margin:18px 0}.callout.amber{border-color:var(--amber);background:var(--amber2)}.callout.red{border-color:var(--red);background:var(--red2)}.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.card{border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,var(--panel),var(--panel2));padding:19px;box-shadow:0 4px 14px rgba(34,38,30,.04)}.card strong{color:var(--green)}.tag{display:inline-block;border-radius:999px;background:var(--graphite);color:#fff;padding:4px 9px;font-family:var(--sans);font-size:12px;font-weight:800}.tag.green{background:var(--green)}.tag.amber{background:var(--amber)}.tag.red{background:var(--red)}
+    table{width:100%;border-collapse:separate;border-spacing:0;margin:16px 0;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:rgba(255,255,255,.55)}th,td{padding:12px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}th{font-family:var(--sans);font-size:12px;letter-spacing:.04em;text-transform:uppercase;background:#e5dcc8;color:var(--graphite)}tr:last-child td{border-bottom:0}td.num{font-family:var(--mono);white-space:nowrap;color:#24312e}.score{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}.score .panel{border-radius:22px;border:1px solid var(--line);padding:20px;background:#fffdf7}.score .panel h3{margin:4px 0 8px;color:var(--ink)}.price-ladder{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:16px}.price-box{border:1px solid var(--line);border-radius:18px;padding:16px;background:rgba(255,255,255,.58)}.price{font-family:var(--mono);font-size:22px;font-weight:800;color:var(--green);display:block}.danger .price{color:var(--red)}.watch .price{color:var(--amber)}.timeline{display:grid;gap:12px}.event{display:grid;grid-template-columns:120px 1fr;gap:16px;border-top:1px solid var(--line);padding-top:12px}.event:first-child{border-top:0;padding-top:0}.event time{font-family:var(--mono);font-weight:800;color:var(--amber)}.source{border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.6);padding:12px 14px;margin:10px 0}.source b{font-family:var(--sans);color:var(--green)}.warning-title{font-family:var(--sans);font-weight:900;color:var(--red)}.print-note{display:none}
+    @media(max-width:1080px){.shell{grid-template-columns:1fr}.rail{position:relative;top:0;min-height:0}.nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.facts{grid-template-columns:repeat(2,minmax(0,1fr))}.facts .fact:last-child{grid-column:1/-1}.price-ladder{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:720px){.shell{padding:16px 12px 60px}.hero,section{padding:24px 20px;border-radius:24px}.grid-2,.grid-3,.score,.price-ladder{grid-template-columns:1fr}.event{grid-template-columns:1fr}.nav{grid-template-columns:1fr}table{font-size:13px;display:block;overflow-x:auto}.facts{grid-template-columns:1fr}}@media print{body{background:#fff}.shell{display:block;padding:0}.rail{display:none}.hero,section{box-shadow:none;break-inside:avoid}.print-note{display:block}.source a:after{content:" (" attr(href) ")";font-size:10px;color:#555}}
+  </style>
+</head>
+<body>
+<div class="shell">
+  <aside class="rail">
+    <div class="brand">Buffett-style research file</div>
+    <h2>CEG v2<br/>深度研究</h2>
+    <p>AI 电力基础设施、核电稀缺资产、Calpine 并购后资本配置与估值安全边际。</p>
+    <nav class="nav" aria-label="报告导航">
+      <a href="#header">00 报告头</a><a href="#safety">01 安全框</a><a href="#map">02 公司地图</a><a href="#business">03 从零理解业务</a><a href="#industry">04 行业利润池</a><a href="#moat">05 赢在哪里</a><a href="#financials">06 五年财务质量</a><a href="#management">07 管理层与资本配置</a><a href="#peers">08 同业比较</a><a href="#valuation">09 估值场景树</a><a href="#risks">10 反方与风险</a><a href="#action">11 投资者行动面板</a><a href="#lesson">12 学习框架</a><a href="#sources">13 来源审计</a><a href="#log">14 更新日志</a>
+    </nav>
+    <div class="stamp">结论先行：CEG 是值得学习和持续跟踪的 AI 电力稀缺资产，但以 2026 年 6 月 8 日收盘价 $250.67 看，不是“明显便宜”的一键买入对象。</div>
+  </aside>
+  <main class="report">
+    <header class="hero" id="header">
+      <div class="eyebrow">Deep research file · AI Power Infrastructure · CEG</div>
+      <h1>Constellation Energy：把 AI 数据中心电力，拆成一家公司的真实经济账</h1>
+      <p class="lede">这不是“核电 + AI = 买入”的故事报告，而是一份面向普通长期投资者的研究文件：先学会 CEG 怎么赚钱、哪些资产真的稀缺、管理层如何配置资本，再判断今天价格是否给了足够安全边际。</p>
+      <div class="facts">
+        <div class="fact"><b>CEG</b><span>Constellation Energy / Nasdaq</span></div>
+        <div class="fact"><b>$250.67</b><span>2026-06-08 收盘价；美股 6/9 未开盘前快照</span></div>
+        <div class="fact"><b>~21.8x</b><span>以 2026 adj. EPS 指引中点 $11.50 估算</span></div>
+        <div class="fact"><b>55 GW</b><span>Calpine 后合并发电容量，公司口径</span></div>
+        <div class="fact"><b>Watchlist</b><span>好资产，价格安全边际偏薄</span></div>
+      </div>
+      <div class="status-row">
+        <span class="pill"><strong>报告日期</strong> 2026-06-09</span>
+        <span class="pill"><strong>数据截止</strong> 市场数据至 2026-06-09 09:02 UTC；公司资料至 2026-06-08</span>
+        <span class="pill"><strong>状态</strong> deep research file v2</span>
+        <span class="pill"><strong>货币</strong> 美元 / Fiscal year end: 12/31</span>
+      </div>
+    </header>
+
+    <section id="safety">
+      <div class="kicker">01 · Investor safety box</div>
+      <h2>先保护你：这份报告能支持什么，不能支持什么</h2>
+      <div class="grid-2">
+        <div class="card"><span class="tag green">能支持</span><p>帮你从零理解 CEG 的业务、行业结构、护城河、财务质量、管理层资本配置和估值观察区间；帮你建立“好公司等好价格”的跟踪清单。</p></div>
+        <div class="card"><span class="tag red">不能支持</span><p>不能告诉你“今天必须买多少仓位”。CEG 涉及电力市场、监管、核电、商品价格、并购整合和杠杆，不适合被简化成一个短线买卖点。</p></div>
+        <div class="card"><span class="tag amber">最大未知数</span><p>AI 数据中心电力需求能否持续转化为长期、高信用、价格足够优的合同；Calpine 并购后的自由现金流和债务纪律能否兑现。</p></div>
+        <div class="card"><span class="tag">新手最容易犯的错</span><p>只看到“AI 要用电、核电稀缺”，就把任何价格都当成便宜。巴菲特式原则是：好公司和好价格是两件事，必须分开判断。</p></div>
+      </div>
+      <div class="callout red"><span class="warning-title">组合提醒：</span>如果资金规模较小或经验不足，把 CEG 当成学习样本比把它当成重仓标的更合理。电力股看似“传统稳定”，但 CEG 的利润和估值正在被 AI、电力市场、监管和并购重估，波动不低。</div>
+    </section>
+
+    <section id="map">
+      <div class="kicker">02 · One-page company map</div>
+      <h2>一页看懂：CEG 到底是一家什么公司？</h2>
+      <p>CEG 是美国最大的清洁、可靠电力生产商之一，也是竞争性电力零售商。Calpine 并入后，公司拥有核电、天然气、油、地热、水电、风电和太阳能等约 55GW 发电容量，并称可服务约 2700 万户家庭等效负荷，同时覆盖约 250 万客户账户、服务 80% 的 Fortune 100。<sup><a href="#src-q1">[1]</a></sup></p>
+      <div class="score">
+        <div class="panel"><span class="tag green">业务质量</span><h3>质量较高，但不是简单消费垄断</h3><p>核电和并网资源稀缺，长期企业客户关系强；但发电资产需要持续资本投入，受监管和电力市场价格影响。</p></div>
+        <div class="panel"><span class="tag amber">价格状态</span><h3>目前更像观察清单，不是明显便宜</h3><p>按 $250.67 与 2026 adjusted operating EPS 指引中点 $11.50 粗算约 21.8 倍。这个价格要求公司持续证明 AI 合同、Calpine 整合和自由现金流。</p></div>
+      </div>
+      <div class="grid-3">
+        <div class="card"><strong>研究它的理由 1：</strong><br/>稳定电力从普通商品变成 AI 数据中心的瓶颈资源，稀缺资产可能重新定价。</div>
+        <div class="card"><strong>研究它的理由 2：</strong><br/>核电、地热和高效率燃气资产的重建周期长，供给不能像软件服务器一样快速复制。</div>
+        <div class="card"><strong>研究它的理由 3：</strong><br/>公司已经通过 CyrusOne、Microsoft / Crane 等案例证明需求不只是叙事，而能进入合同结构。<sup><a href="#src-q1">[1]</a></sup><sup><a href="#src-crane">[7]</a></sup></div>
+      </div>
+      <div class="grid-3" style="margin-top:16px">
+        <div class="card"><strong>怀疑它的理由 1：</strong><br/>电力价格、容量市场和并网规则由监管与电网组织决定，不能完全自由定价。</div>
+        <div class="card"><strong>怀疑它的理由 2：</strong><br/>Calpine 并购扩大规模，也带来更高债务、天然气资产周期和整合风险。</div>
+        <div class="card"><strong>怀疑它的理由 3：</strong><br/>市场已经在给 AI 电力稀缺资产较高估值，若需求或合同兑现放慢，估值压缩会很痛。</div>
+      </div>
+    </section>
+
+    <section id="business">
+      <div class="kicker">03 · Business from zero</div>
+      <h2>从零理解业务：它不是“卖电这么简单”</h2>
+      <h3>第一层：发电资产</h3>
+      <p>CEG 拥有核电、天然气、地热、水电、风电、太阳能等发电资产。发电企业的第一笔钱来自“发电并卖出电量”；但真正关键的是：这笔电能否稳定、低碳、按客户需要的地点和时间交付。</p>
+      <h3>第二层：容量和可靠性</h3>
+      <p>电网不能只看平均发电量，还要看高峰时刻有没有足够可调度电源。核电提供 24/7 基荷，燃气机组提供调峰与可靠性，地热提供稳定可再生基荷。这些能力在数据中心负荷增长时更有价值。</p>
+      <h3>第三层：客户与合同</h3>
+      <p>大型云厂商和数据中心客户不只买“便宜电”，还买可持续、低碳、稳定、可交付的电力方案。CEG 的商业平台能把发电资产、清洁属性、容量和客户需求组合成长期合同。</p>
+      <table>
+        <thead><tr><th>业务要素</th><th>CEG 的位置</th><th>投资者要问的问题</th></tr></thead>
+        <tbody>
+          <tr><td>客户</td><td>公用事业、市政/合作社、大型工商客户、公共部门、住宅客户、数据中心客户。</td><td>客户是否信用强、合同期限长、价格能否覆盖资本成本？</td></tr>
+          <tr><td>供应商</td><td>燃料、核燃料、设备维护、工程施工、涡轮/变压器/电网连接资源。</td><td>供应链紧张会不会推高 capex 或拖延项目？</td></tr>
+          <tr><td>定价</td><td>批发电价、容量市场、长期 PPA、零售电力、清洁属性和对冲。</td><td>利润是稳定合同，还是短期电价上涨带来的周期收益？</td></tr>
+          <tr><td>监管</td><td>FERC、PJM/ERCOT/NYISO/CAISO、州公用事业委员会、NRC、环保许可。</td><td>监管是否允许公司保留稀缺资产的超额回报？</td></tr>
+          <tr><td>上市证券</td><td>Nasdaq: CEG 普通股，持有的是公司整体股权。</td><td>Calpine 并购、债务、回购、二级发行股东退出都会影响每股价值。</td></tr>
+        </tbody>
+      </table>
+      <div class="callout amber">更准确的理解：CEG 不是“传统公用事业股”，也不是纯 AI 概念股。它是拥有稀缺发电资产和商业客户平台的竞争性电力基础设施公司。</div>
+    </section>
+
+    <section id="industry">
+      <div class="kicker">04 · Industry structure and profit pool</div>
+      <h2>AI 电力基础设施：利润池在哪里，谁承担风险？</h2>
+      <p>AI 数据中心用电需求确实在增长。IEA 估计，全球数据中心用电 2024 年约 415TWh，占全球用电约 1.5%；到 2030 年将超过翻倍至约 945TWh，其中 AI 是最重要驱动之一。<sup><a href="#src-iea">[6]</a></sup> 但投资结论不能停在“需求增长”四个字，因为利润会在不同环节重新分配。</p>
+      <table>
+        <thead><tr><th>价值链环节</th><th>谁赚钱</th><th>谁承担风险</th><th>CEG 相关性</th></tr></thead>
+        <tbody>
+          <tr><td>云厂商 / 数据中心</td><td>算力、AI 服务、企业软件与模型使用。</td><td>AI 投资回报、芯片折旧、客户需求、能源成本。</td><td>它们是 CEG 的潜在长期高信用客户，不是 CEG 的直接同业。</td></tr>
+          <tr><td>电力生产商</td><td>能源、电力容量、清洁属性、长期 PPA。</td><td>燃料、停机、监管、对冲、建设与维护资本。</td><td>CEG 的主战场。核电和燃气/地热组合让它能卖“可靠性”。</td></tr>
+          <tr><td>电网与公用事业</td><td>输配电回报、费率基础增长。</td><td>监管回收、政治压力、项目审批。</td><td>CEG 依赖并网和市场规则，但不是典型受监管公用事业。</td></tr>
+          <tr><td>电力设备与工程</td><td>变压器、开关设备、UPS、冷却、电气系统、燃机、服务。</td><td>供应链、产能周期、估值过热。</td><td>ETN、VRT、GEV 等是 AI 电力链相邻标的，弹性更直接、估值也更高。</td></tr>
+        </tbody>
+      </table>
+      <h3>CEG 是价格接受者还是价格设定者？</h3>
+      <p>它不是完全的价格设定者。电力市场和容量市场有规则，监管会限制超额利润。但在“可靠、低碳、可交付”的电力稀缺时，CEG 可以通过长期合同、清洁属性和可用容量获得更好的经济条件。它的护城河不是品牌自由提价，而是稀缺资产 + 交付能力 + 监管许可。</p>
+    </section>
+
+    <section id="moat">
+      <div class="kicker">05 · How this company wins or loses</div>
+      <h2>CEG 怎样赢？又会怎样输？</h2>
+      <div class="grid-2">
+        <div class="card"><span class="tag green">资产稀缺</span><h3>核电与并网资源难以复制</h3><p>核电站、现有并网权、运营许可证和安全文化不是资本砸下去就能快速复制。CEG 管理层在 2026 展望中强调，约 55GW 资产的重建成本显著高于当前企业价值；这是管理层口径，需要市场和现金流验证。<sup><a href="#src-outlook">[3]</a></sup></p></div>
+        <div class="card"><span class="tag green">运营能力</span><h3>核电运行质量是护城河证据</h3><p>2026 Q1，公司核电组合发电 44,666GWh；不含 Salem 与 STP 的核电容量因子为 92.3%，低于 2025 Q1 的 94.1%，但没有非换料停机日。<sup><a href="#src-q1">[1]</a></sup> 这比“AI 叙事”更能证明资产质量。</p></div>
+        <div class="card"><span class="tag amber">客户渠道</span><h3>企业客户关系提供合同入口</h3><p>公司称服务约 80% 的 Fortune 100，并在 2026 展望中披露 190 million MWh 的 C&I load served、平均客户期限超过五年。<sup><a href="#src-outlook">[3]</a></sup></p></div>
+        <div class="card"><span class="tag red">可能输掉</span><h3>监管和周期可能拿走超额回报</h3><p>如果监管要求把容量价值返还给消费者，或 AI 负荷不愿为 24/7 供电支付溢价，CEG 的“稀缺电力溢价”会下降。</p></div>
+      </div>
+      <div class="timeline" style="margin-top:20px">
+        <div class="event"><time>2024-09</time><div>CEG 宣布与 Microsoft 签署 20 年购电协议，推动 Crane Clean Energy Center / TMI Unit 1 重启，约 835MW 碳-free 电力。<sup><a href="#src-crane">[7]</a></sup></div></div>
+        <div class="event"><time>2026-01</time><div>完成 Calpine 收购，加入天然气和地热资产，组合容量扩大至约 55GW，业务从“核电+零售”变成更复杂的全国发电平台。<sup><a href="#src-calpine">[8]</a></sup></div></div>
+        <div class="event"><time>2026-05</time><div>Q1 结果确认 2026 adjusted operating EPS 指引 $11.00-$12.00，Freestone / CyrusOne 380MW 数据中心供电和额外 Phase 2 380MW 进入跟踪重点。<sup><a href="#src-q1">[1]</a></sup></div></div>
+        <div class="event"><time>2026-06</time><div>FERC 批准 Crane 相关豁免，提升 TMI Unit 1 重启并网路径确定性；这仍不是最终 NRC 安全审批。<sup><a href="#src-ferc">[9]</a></sup></div></div>
+      </div>
+    </section>
+
+    <section id="financials">
+      <div class="kicker">06 · Five-year financial quality</div>
+      <h2>五年财务质量：要小心 GAAP 波动，不要只看一行 EPS</h2>
+      <p>CEG 2022 年从 Exelon 分拆，因此“5 年历史”里 2021 年及以前不完全等同于今天的上市公司；2026 又并入 Calpine，资产、债务、股份数和现金流结构大幅变化。巴菲特式阅读应该关注两点：资产能否持续产生现金；管理层能否把现金转成每股价值。</p>
+      <table>
+        <thead><tr><th>年度 / SEC 期间</th><th>营收</th><th>净利润</th><th>经营现金流</th><th>资本开支</th><th>摊薄 EPS</th><th>摊薄股数</th><th>读法</th></tr></thead>
+        <tbody>
+          <tr><td>2021</td><td class="num">$19.65B</td><td class="num">-$0.21B</td><td class="num">-$1.34B</td><td class="num">$1.33B</td><td class="num">n/a</td><td class="num">n/a</td><td>分拆前/比较期间，参考性有限。</td></tr>
+          <tr><td>2022</td><td class="num">$24.44B</td><td class="num">-$0.16B</td><td class="num">-$2.35B</td><td class="num">$1.69B</td><td class="num">-$0.49</td><td class="num">329M</td><td>独立上市初期，商品和对冲影响较大。</td></tr>
+          <tr><td>2023</td><td class="num">$24.92B</td><td class="num">$1.62B</td><td class="num">-$5.30B</td><td class="num">$2.42B</td><td class="num">$5.01</td><td class="num">324M</td><td>GAAP 利润改善，但经营现金流受抵押品/营运资本影响。</td></tr>
+          <tr><td>2024</td><td class="num">$23.57B</td><td class="num">$3.75B</td><td class="num">-$2.46B</td><td class="num">$2.57B</td><td class="num">$11.89</td><td class="num">315M</td><td>利润强，股份数下降；仍需看现金转换。</td></tr>
+          <tr><td>2025</td><td class="num">$25.53B</td><td class="num">$2.32B</td><td class="num">$4.24B</td><td class="num">$2.95B</td><td class="num">$7.40</td><td class="num">314M</td><td>现金流转正，进入 Calpine 后基准。</td></tr>
+          <tr><td>2026 Q1</td><td class="num">$11.12B</td><td class="num">$1.59B</td><td class="num">$0.43B</td><td class="num">$1.28B</td><td class="num">$4.49 GAAP / $2.74 adj.</td><td class="num">354M</td><td>Calpine 并入后首季，债务和股数已变。</td></tr>
+        </tbody>
+      </table>
+      <p class="small">数据来源：SEC Company Facts / 10-K / 10-Q XBRL；金额四舍五入。2026 Q1 调整后 EPS 来自公司 Q1 新闻稿。<sup><a href="#src-10q">[2]</a></sup><sup><a href="#src-q1">[1]</a></sup></p>
+      <div class="grid-3">
+        <div class="card"><strong>收入质量：</strong><br/>营收不是核心护城河指标。发电公司更重要的是合同期限、容量价格、对冲、燃料成本和可用率。</div>
+        <div class="card"><strong>现金转换：</strong><br/>经营现金流 2021-2024 大幅波动，说明 owner earnings 不能简单等于 GAAP 净利润。</div>
+        <div class="card"><strong>资本强度：</strong><br/>2025 capex 接近 $2.95B；并购后维护、核燃料、重启和增长 capex 都会提高资本配置难度。</div>
+      </div>
+      <h3>资产负债表的变化</h3>
+      <p>截至 2026-03-31，CEG 10-Q 显示现金及等价物 $0.8B、限制性现金 $0.371B、资产 $96.9B、负债 $63.1B、股东权益 $33.5B；长期债务当前部分 $0.37B、长期部分 $16.99B。<sup><a href="#src-10q">[2]</a></sup> 这意味着“买 CEG”不再只是买核电，还在承接 Calpine 后的资产整合和杠杆管理。</p>
+      <div class="callout amber"><strong>Owner earnings 暂定方法：</strong>CEG 的真实 owner earnings 不能用一个简单公式锁死。更保守的做法是用 adjusted operating EPS / FCF before growth 作代理，再扣除维护 capex、不确定增长 capex、债务成本和可能的监管/停机风险。当前 $250 附近，安全边际并不厚。</div>
+    </section>
+
+    <section id="management">
+      <div class="kicker">07 · Management and capital allocation</div>
+      <h2>选公司也是选人：管理层是在做大规模，还是做大每股价值？</h2>
+      <p>CEO Joseph Dominguez 与 CFO Shane Smith 的公开表述重点是执行、整合 Calpine、维持投资级评级、把数据中心和可靠电力需求转成长期合同。管理层在 2026 展望中提出：2026 adjusted operating EPS $11-$12、总回购授权增至 $5B、$3.9B 增长 capex、维持 Moody's Baa1 / S&P BBB+ 评级、股息目标每年增长 10%。<sup><a href="#src-outlook">[3]</a></sup></p>
+      <table>
+        <thead><tr><th>资本配置动作</th><th>正面解读</th><th>需要警惕</th><th>巴菲特式问题</th></tr></thead>
+        <tbody>
+          <tr><td>收购 Calpine</td><td>扩大发电组合，加入大量燃气/地热资产，更能服务数据中心可靠电力需求。</td><td>交易含现金、股票和债务；复杂度、杠杆和整合风险上升。</td><td>并购价格是否低于资产重置价值？整合后每股 owner earnings 是否真实增加？</td></tr>
+          <tr><td>回购授权 $5B</td><td>管理层愿意把多余资本返还股东。</td><td>只有在低于内在价值时回购才增值；高估值回购会浪费资本。</td><td>公司是在低价回购，还是为了抵消并购发股和股权激励？</td></tr>
+          <tr><td>股息 10% 年增长目标</td><td>有助于纪律化现金流分配。</td><td>过度承诺股息会压缩增长投资和降杠杆空间。</td><td>股息是否来自真正自由现金流，而不是靠债务维持？</td></tr>
+          <tr><td>Crane / 数据中心合同</td><td>能把核电稀缺性转成长期、高信用现金流。</td><td>审批、重启、成本和并网时间可能变化。</td><td>合同价格、期限、违约保护和成本超支承担方是谁？</td></tr>
+          <tr><td>二级发行相关回购</td><td>2026-06-01 公告显示出售股东卖出 1100 万股，CEG 不收取 proceeds；公司拟回购其中 200 万股。<sup><a href="#src-secondary">[5]</a></sup></td><td>不是公司增发，但提示早期/并购相关股东流动性退出；回购价格 $281 高于当前 $250。</td><td>如果公司愿意在 $281 回购，管理层认为内在价值更高；但投资者仍要自己验证。</td></tr>
+        </tbody>
+      </table>
+      <div class="callout">管理层目前的表现值得继续观察，但还不能盖棺定论。真正考验在 2026-2028：Calpine 现金流、Crane 重启、合同价格、债务评级、回购价格和 FCF before growth 是否一起兑现。</div>
+    </section>
+
+    <section id="peers">
+      <div class="kicker">08 · Peer comparison</div>
+      <h2>同业比较：CEG 不是孤立判断，要看替代机会</h2>
+      <p>同业不是为了找“最低 PE”，而是为了理解不同商业模式承受的风险。CEG 的直接同业是独立发电与零售电力公司；AI 电力链的相邻标的是设备/电气基础设施公司。它们都可能受益于 AI 用电，但经济模式完全不同。</p>
+      <table>
+        <thead><tr><th>公司</th><th>价值链角色</th><th>市场数据快照</th><th>相对优势</th><th>主要未知数</th><th>CEG 对比结论</th></tr></thead>
+        <tbody>
+          <tr><td><strong>CEG</strong></td><td>核电 + 燃气/地热 + 零售/企业电力平台</td><td class="num">$250.67 / MCap ~$89.5B / 2026E ~21.8x adj. EPS</td><td>核电和企业客户稀缺，Calpine 后规模更大。</td><td>整合、杠杆、监管、合同价格。</td><td>核心研究对象；质量好但价格不算便宜。</td></tr>
+          <tr><td><strong>VST</strong></td><td>直接资产同业：发电 + 零售，Texas/East 等市场</td><td class="num">$146.90 / MCap ~$49.5B / PE ~24.8 / Forward PE ~14.0</td><td>电力周期弹性强，直接受容量和电价影响。</td><td>更高商品周期和地区市场波动。</td><td>可能更便宜/更有弹性，但“可理解稳定性”低于 CEG。</td></tr>
+          <tr><td><strong>NRG</strong></td><td>零售电力 + 发电 + 能源服务</td><td class="num">$127.71 / MCap ~$26.6B / trailing PE 受 GAAP 扭曲</td><td>零售客户和能源服务平台。</td><td>利润质量、债务、并购和零售竞争。</td><td>适合做对照，但不应只因低/高 PE 下结论。</td></tr>
+          <tr><td><strong>NEE</strong></td><td>受监管公用事业 + 可再生能源</td><td class="num">$84.01 / MCap ~$175.2B / PE ~21.3</td><td>现金流更受监管保护，分红传统更强。</td><td>利率、费率基础、监管回收、增长放缓。</td><td>更像稳定型复利/股息对照，AI 直接弹性低于 CEG。</td></tr>
+          <tr><td><strong>ETN / VRT / GEV</strong></td><td>电力设备、数据中心电气/冷却、燃机/电网设备</td><td class="num">ETN PE ~39；VRT PE ~75；GEV PE ~27</td><td>更直接受益于数据中心 capex 和电网设备短缺。</td><td>估值高、周期产能、订单持续性。</td><td>AI 电力“卖铲人”，弹性可能更大，但安全边际常更薄。</td></tr>
+        </tbody>
+      </table>
+      <p class="small">市场数据为 2026-06-09 UTC 快照与 StockAnalysis 页面，供应商 EPS 口径不同，不能机械比较。<sup><a href="#src-market">[4]</a></sup></p>
+    </section>
+
+    <section id="valuation">
+      <div class="kicker">09 · Valuation scenario tree</div>
+      <h2>估值场景树：当前好在哪里，贵在哪里？</h2>
+      <p>估值锚点先用公司 2026 adjusted operating EPS 指引 $11.00-$12.00。以中点 $11.50 和当前收盘 $250.67 粗算，CEG 在约 21.8 倍 2026 adjusted EPS。<sup><a href="#src-q1">[1]</a></sup><sup><a href="#src-market">[4]</a></sup> 对一家资产稀缺、但仍有监管/商品/资本开支/并购风险的公司，这不是离谱泡沫，也不是明显便宜。</p>
+      <table>
+        <thead><tr><th>场景</th><th>假设</th><th>保守估值方法</th><th>读法</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag red">下行 / 无增长</span></td><td>AI 合同兑现慢，Calpine 协同低，监管压制容量价格；normalized EPS/owner earnings proxy 回落到 $9-$10。</td><td class="num">14-16x × $9-$10 = $126-$160</td><td>若故事变坏，股价仍有显著下行。</td></tr>
+          <tr><td><span class="tag amber">基准 / 稳定兑现</span></td><td>2026 指引兑现，部分长期合同提升可见度，Calpine 产生现金但不是爆发式增长；normalized EPS/owner earnings proxy $11.5-$14。</td><td class="num">17-20x × $11.5-$14 = $196-$280</td><td>当前 $250 在基准区间中上部，安全边际偏薄。</td></tr>
+          <tr><td><span class="tag green">乐观 / AI 电力稀缺重估</span></td><td>新增长期数据中心合同、Crane 重启、天然气/地热资产利用率提升、回购有效；2029 owner earnings proxy 可到 $17-$20。</td><td class="num">20-24x × $17-$20 = $340-$480</td><td>上涨空间存在，但需要多项执行成功，不能当默认情景。</td></tr>
+        </tbody>
+      </table>
+      <h3>价格观察阶梯</h3>
+      <div class="price-ladder">
+        <div class="price-box watch"><span class="price">$250-$270</span><p>当前/附近：学习和跟踪可以，直接说“便宜”证据不足。</p></div>
+        <div class="price-box"><span class="price">$225-$240</span><p>开始值得重做模型：若 2026 指引、债务评级和合同进展没坏，吸引力提高。</p></div>
+        <div class="price-box"><span class="price">$200-$220</span><p>更接近巴菲特式“好资产出现较好价格”的研究区间，仍需核对现金流。</p></div>
+        <div class="price-box danger"><span class="price">&lt;$200</span><p>黑天鹅错杀候选；前提是基本面不是永久变坏。</p></div>
+      </div>
+      <div class="callout red"><strong>估值纪律：</strong>股价从高点跌很多，不自动等于便宜。安全边际来自现金流和合同，而不是来自“跌幅”。</div>
+    </section>
+
+    <section id="risks">
+      <div class="kicker">10 · Risks and anti-thesis</div>
+      <h2>最强反方：为什么 CEG 可能不是好投资？</h2>
+      <div class="grid-2">
+        <div class="card"><strong>监管拿走利润：</strong><br/>电力和容量价格上涨会引发政治压力。监管若要求数据中心承担电网成本，或限制电价/容量收益，上行会被压缩。</div>
+        <div class="card"><strong>AI 负荷增长不及预期：</strong><br/>IEA 也强调 AI 用电存在大不确定性；效率提升、capex 放缓、模型经济性不足都可能削弱需求。</div>
+        <div class="card"><strong>Calpine 整合与债务：</strong><br/>收购提高资产多样性，也把天然气周期、债务、资产出售和整合执行带进公司。</div>
+        <div class="card"><strong>核电运行 / Crane 风险：</strong><br/>重启需要 NRC 等审批和工程执行，核电停机、安全、成本超支或延误都会破坏估值。</div>
+        <div class="card"><strong>现金流质量：</strong><br/>CEG 的 GAAP 经营现金流过去波动大，若 FCF before growth 不兑现，adjusted EPS 可能高估 owner earnings。</div>
+        <div class="card"><strong>估值风险：</strong><br/>当市场把它当 AI 概念资产定价，任何合同、监管或电价失望都可能导致 PE 从 20 倍以上回落到 15-17 倍。</div>
+      </div>
+      <div class="callout amber"><strong>聪明空头会怎么说：</strong>“CEG 是好资产，但市场已经把 AI 电力稀缺和长期合同重估大部分计入价格。你买到的是执行风险，不是便宜资产。” 这句话不一定对，但足够严肃，必须在买入前回答。</div>
+    </section>
+
+    <section id="action">
+      <div class="kicker">11 · Investor action panel</div>
+      <h2>投资者行动面板：以后怎么跟踪，而不是今天冲动下单</h2>
+      <table>
+        <thead><tr><th>项目</th><th>当前判断</th><th>需要更新的证据</th></tr></thead>
+        <tbody>
+          <tr><td>当前状态</td><td><span class="tag amber">Watchlist / Study candidate</span></td><td>好资产，当前价格安全边际偏薄；适合建立跟踪文件。</td></tr>
+          <tr><td>下一步验证</td><td>Q2/Q3 2026 业绩、FCFbG、Calpine 整合、债务、回购价格。</td><td>特别关注经营现金流是否匹配 adjusted EPS；是否维持 Baa1 / BBB+。</td></tr>
+          <tr><td>合同触发器</td><td>新增长期数据中心 PPA / colocated load / firm gas contract。</td><td>必须知道合同期限、价格、客户信用、是否含升级条款、谁承担电网成本。</td></tr>
+          <tr><td>监管触发器</td><td>FERC / PJM / ERCOT / NRC / 州监管更新。</td><td>Crane 并网和重启路径、数据中心负荷成本分配、容量市场规则。</td></tr>
+          <tr><td>价格触发器</td><td>$225-$240 复核；$200-$220 深入；低于 $200 黑天鹅审查。</td><td>只在基本面未永久恶化时有效；若 thesis broken，低价不是机会。</td></tr>
+          <tr><td>破坏 thesis 的信号</td><td>核电容量因子持续下滑、重大停机、债务评级压力、合同取消/延期、管理层高价并购。</td><td>出现这些信号时，即使股价便宜也要重新归入 too hard 或 value-trap risk。</td></tr>
+          <tr><td>下一次复盘</td><td>2026 Q2 财报后，或任何新大型数据中心 / Crane / FERC / NRC 事件后。</td><td>更新价格、股数、债务、合同、FCFbG 和估值阶梯。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="lesson">
+      <div class="kicker">12 · Lesson for the user</div>
+      <h2>这家公司训练你的巴菲特式能力是什么？</h2>
+      <div class="grid-3">
+        <div class="card"><strong>原则 1：先看生意，再看价格。</strong><br/>CEG 的生意确实比普通电力股更有稀缺性，但这只回答“值得研究”，不自动回答“现在便宜”。</div>
+        <div class="card"><strong>原则 2：护城河必须体现在经济账。</strong><br/>核电、并网、客户关系是护城河线索；真正证据是容量因子、长期合同、现金流、回购和每股价值。</div>
+        <div class="card"><strong>原则 3：好公司可以先放观察清单。</strong><br/>不买不是错过，而是等待市场给更好赔率。你不需要对每个好故事挥棒。</div>
+      </div>
+      <h3>迁移到其他公司怎么用？</h3>
+      <p>研究任何 AI 电力公司时，都按这五步：① 确定价值链位置；② 判断卖的是商品、容量、设备还是监管回报；③ 找可验证的护城河证据；④ 把 GAAP 利润转换成 owner earnings proxy；⑤ 当前价格必须给你承认错误的空间。</p>
+    </section>
+
+    <section id="sources">
+      <div class="kicker">13 · Source audit</div>
+      <h2>来源审计：哪些结论来自哪些资料</h2>
+      <div class="source" id="src-q1"><b>[1] CEG 2026 Q1 results</b> · Constellation Energy · 2026-05-11 · 用于 Q1 EPS、2026 指引、CyrusOne/Freestone、核电运行、55GW/客户口径。<br/><a href="https://www.constellationenergy.com/news/2026/05/constellation-reports-first-quarter-2026-results.html">https://www.constellationenergy.com/news/2026/05/constellation-reports-first-quarter-2026-results.html</a></div>
+      <div class="source" id="src-10q"><b>[2] 2026 Q1 Form 10-Q</b> · SEC EDGAR / Constellation Energy · 2026-05-11 · 用于资产负债表、现金、债务、经营现金流、capex、回购授权和季度股息。<br/><a href="https://www.sec.gov/Archives/edgar/data/1868275/000186827526000067/ceg-20260331.htm">https://www.sec.gov/Archives/edgar/data/1868275/000186827526000067/ceg-20260331.htm</a></div>
+      <div class="source" id="src-outlook"><b>[3] 2026 Business and Earnings Outlook</b> · Constellation Energy · 2026-03-31 · 用于 2026 EPS 指引、Base EPS 增长目标、长期合同、客户平台、资本配置、评级、核电运行和 FCFbG 定义。<br/><a href="https://investors.constellationenergy.com/static-files/2a1fcbce-ab5d-40fa-b349-5674d3287472">https://investors.constellationenergy.com/static-files/2a1fcbce-ab5d-40fa-b349-5674d3287472</a></div>
+      <div class="source" id="src-market"><b>[4] Market data snapshot</b> · StockAnalysis + finance snapshot · 2026-06-09 UTC · 用于 CEG 与同业价格、market cap、PE/forward PE。<br/><a href="https://stockanalysis.com/stocks/ceg/">https://stockanalysis.com/stocks/ceg/</a> · <a href="https://stockanalysis.com/stocks/vst/">https://stockanalysis.com/stocks/vst/</a> · <a href="https://stockanalysis.com/stocks/nrg/">https://stockanalysis.com/stocks/nrg/</a> · <a href="https://stockanalysis.com/stocks/nee/">https://stockanalysis.com/stocks/nee/</a> · <a href="https://stockanalysis.com/stocks/etn/">https://stockanalysis.com/stocks/etn/</a> · <a href="https://stockanalysis.com/stocks/vrt/">https://stockanalysis.com/stocks/vrt/</a> · <a href="https://stockanalysis.com/stocks/gev/">https://stockanalysis.com/stocks/gev/</a></div>
+      <div class="source" id="src-secondary"><b>[5] Secondary offering pricing</b> · Constellation Energy · 2026-06-01 · 用于 1100 万股出售股东二级发行、公司不收 proceeds、拟回购 200 万股。<br/><a href="https://www.constellationenergy.com/news/2026/06/constellation-energy-corporation-announces-pricing-of-secondary-public-offering-of-common-stock.html">https://www.constellationenergy.com/news/2026/06/constellation-energy-corporation-announces-pricing-of-secondary-public-offering-of-common-stock.html</a></div>
+      <div class="source" id="src-iea"><b>[6] Energy and AI executive summary</b> · International Energy Agency · 2025 · 用于数据中心用电 2024/2030、AI 电力不确定性和电网瓶颈。<br/><a href="https://www.iea.org/reports/energy-and-ai/executive-summary">https://www.iea.org/reports/energy-and-ai/executive-summary</a></div>
+      <div class="source" id="src-crane"><b>[7] Crane Clean Energy Center announcement</b> · Constellation Energy · 2024-09-20 · 用于 Microsoft 20 年 PPA、TMI Unit 1 / Crane、约 835MW、审批和重启背景。<br/><a href="https://investors.constellationenergy.com/node/8711/pdf">https://investors.constellationenergy.com/node/8711/pdf</a></div>
+      <div class="source" id="src-calpine"><b>[8] Calpine acquisition / completion</b> · Constellation Energy · 2025-01-10 / 2026-01-07 · 用于交易结构、容量扩张、整合风险。<br/><a href="https://investors.constellationenergy.com/news-releases/news-release-details/constellation-acquire-calpine-creates-americas-leading-producer">https://investors.constellationenergy.com/news-releases/news-release-details/constellation-acquire-calpine-creates-americas-leading-producer</a> · <a href="https://investors.constellationenergy.com/node/9631/pdf">https://investors.constellationenergy.com/node/9631/pdf</a></div>
+      <div class="source" id="src-ferc"><b>[9] Crane FERC waiver update</b> · FERC order copy / ANS Nuclear Newswire · 2026-06-01 to 2026-06-05 · 用于 Crane 并网权豁免和重启路径更新；非公司一手经营数据。<br/><a href="https://www.rtoinsider.com/wp-content/uploads/2026/06/FERC-ER26-2028-000-Crane-Eddystone-Waiver.pdf">https://www.rtoinsider.com/wp-content/uploads/2026/06/FERC-ER26-2028-000-Crane-Eddystone-Waiver.pdf</a> · <a href="https://www.ans.org/news/2026-06-05/article-8097/ferc-approves-constellation-waiver-request-on-crane-restart/">https://www.ans.org/news/2026-06-05/article-8097/ferc-approves-constellation-waiver-request-on-crane-restart/</a></div>
+      <div class="source" id="src-10k"><b>[10] 2025 Form 10-K</b> · Constellation Energy / SEC · 2026-02-24 · 用于历史财务、风险因素、分拆后可比性和年度披露；财务表同时用 SEC XBRL 抽取核对。<br/><a href="https://investors.constellationenergy.com/static-files/8d46f4dc-04f9-4916-aa5d-e12bd5c45aa7">https://investors.constellationenergy.com/static-files/8d46f4dc-04f9-4916-aa5d-e12bd5c45aa7</a></div>
+    </section>
+
+    <section id="log">
+      <div class="kicker">14 · Update log</div>
+      <h2>更新日志</h2>
+      <table>
+        <thead><tr><th>版本</th><th>日期</th><th>数据截止</th><th>主要变化</th><th>下次刷新</th></tr></thead>
+        <tbody>
+          <tr><td>v1</td><td>2026-06-05</td><td>2026-06-04 close</td><td>初版 AI 电力 / CEG 观察清单。</td><td>补深度报告结构、同行、财务和来源审计。</td></tr>
+          <tr><td>v2</td><td>2026-06-09</td><td>2026-06-09 UTC 市场快照；公司资料至 2026-06-08</td><td>按深度单公司模板重写；加入安全框、从零业务、行业利润池、五年财务、同业、估值场景树、行动面板、来源审计和 FERC/Crane 更新。</td><td>2026 Q2 财报；新增数据中心合同；Crane/NRC/FERC/PJM 更新；Calpine 整合和 FCFbG。</td></tr>
+        </tbody>
+      </table>
+      <p class="small print-note">打印说明：本 HTML 为研究文件，不是招股说明书或投资建议。打印后请保留来源审计链接。</p>
+    </section>
+  </main>
+</div>
+</body>
+</html>

@@ -3,7 +3,7 @@ param(
     [string]$Agent = "both",
     [string]$Repo = "Lengcangr/Buffett",
     [string]$Ref = "main",
-    [string]$SkillName = "buffett-investing-coach",
+    [string[]]$SkillName = @("buffett-investing-coach", "investment-research-pipeline"),
     [string]$CodexSkillsDir,
     [string]$ClaudeSkillsDir,
     [switch]$Force
@@ -30,7 +30,9 @@ function Get-DefaultSkillsDir {
 }
 
 function Get-LocalSkillSource {
-    $candidate = Join-Path $PSScriptRoot "skills\$SkillName"
+    param([Parameter(Mandatory = $true)][string]$Name)
+
+    $candidate = Join-Path $PSScriptRoot "skills\$Name"
     $skillFile = Join-Path $candidate "SKILL.md"
 
     if (Test-Path -LiteralPath $skillFile) {
@@ -40,8 +42,8 @@ function Get-LocalSkillSource {
     return $null
 }
 
-function Get-DownloadedSkillSource {
-    $tmpRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("buffett-skill-" + [System.Guid]::NewGuid().ToString("N"))
+function Get-DownloadedRepo {
+    $tmpRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("buffett-skills-" + [System.Guid]::NewGuid().ToString("N"))
     $zipPath = Join-Path $tmpRoot "repo.zip"
     $extractRoot = Join-Path $tmpRoot "extract"
     $downloadUrl = "https://github.com/$Repo/archive/refs/heads/$Ref.zip"
@@ -57,14 +59,9 @@ function Get-DownloadedSkillSource {
             throw "Could not locate extracted repository root."
         }
 
-        $skillPath = Join-Path $repoRoot.FullName "skills\$SkillName"
-        if (-not (Test-Path -LiteralPath (Join-Path $skillPath "SKILL.md"))) {
-            throw "Could not locate skills\$SkillName\SKILL.md in downloaded repository."
-        }
-
         return @{
             Root = $tmpRoot
-            SkillPath = $skillPath
+            RepoRoot = $repoRoot.FullName
         }
     }
     catch {
@@ -76,11 +73,37 @@ function Get-DownloadedSkillSource {
     }
 }
 
+function Resolve-SkillSource {
+    param(
+        [Parameter(Mandatory = $true)][string]$Name,
+        [hashtable]$Downloaded
+    )
+
+    $local = Get-LocalSkillSource -Name $Name
+    if ($local) {
+        return $local
+    }
+
+    if (-not $Downloaded) {
+        throw "Skill '$Name' is not present locally and no downloaded repository is available."
+    }
+
+    $skillPath = Join-Path $Downloaded.RepoRoot "skills\$Name"
+    if (-not (Test-Path -LiteralPath (Join-Path $skillPath "SKILL.md"))) {
+        throw "Could not locate skills\$Name\SKILL.md in downloaded repository."
+    }
+
+    return $skillPath
+}
+
 function Install-SkillToTarget {
     param(
         [Parameter(Mandatory = $true)]
         [ValidateSet("codex", "claude")]
         [string]$Target,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Name,
 
         [Parameter(Mandatory = $true)]
         [string]$SourcePath,
@@ -89,7 +112,7 @@ function Install-SkillToTarget {
     )
 
     $skillsDir = if ($CustomSkillsDir) { $CustomSkillsDir } else { Get-DefaultSkillsDir -Target $Target }
-    $destination = Join-Path $skillsDir $SkillName
+    $destination = Join-Path $skillsDir $Name
 
     New-Item -ItemType Directory -Path $skillsDir -Force | Out-Null
 
@@ -102,33 +125,44 @@ function Install-SkillToTarget {
     }
 
     Copy-Item -LiteralPath $SourcePath -Destination $destination -Recurse -Force
-    Write-Host "Installed $SkillName to $destination"
+    Write-Host "Installed $Name to $destination"
 }
 
 $downloaded = $null
 
 try {
-    $sourcePath = Get-LocalSkillSource
-    if (-not $sourcePath) {
-        $downloaded = Get-DownloadedSkillSource
-        $sourcePath = $downloaded.SkillPath
+    $missingLocal = @()
+    foreach ($name in $SkillName) {
+        if (-not (Get-LocalSkillSource -Name $name)) {
+            $missingLocal += $name
+        }
     }
 
-    switch ($Agent) {
-        "codex" {
-            Install-SkillToTarget -Target "codex" -SourcePath $sourcePath -CustomSkillsDir $CodexSkillsDir
-        }
-        "claude" {
-            Install-SkillToTarget -Target "claude" -SourcePath $sourcePath -CustomSkillsDir $ClaudeSkillsDir
-        }
-        "both" {
-            Install-SkillToTarget -Target "codex" -SourcePath $sourcePath -CustomSkillsDir $CodexSkillsDir
-            Install-SkillToTarget -Target "claude" -SourcePath $sourcePath -CustomSkillsDir $ClaudeSkillsDir
+    if ($missingLocal.Count -gt 0) {
+        $downloaded = Get-DownloadedRepo
+    }
+
+    $targets = switch ($Agent) {
+        "codex" { @("codex") }
+        "claude" { @("claude") }
+        "both" { @("codex", "claude") }
+    }
+
+    foreach ($name in $SkillName) {
+        $sourcePath = Resolve-SkillSource -Name $name -Downloaded $downloaded
+
+        foreach ($target in $targets) {
+            if ($target -eq "codex") {
+                Install-SkillToTarget -Target "codex" -Name $name -SourcePath $sourcePath -CustomSkillsDir $CodexSkillsDir
+            }
+            else {
+                Install-SkillToTarget -Target "claude" -Name $name -SourcePath $sourcePath -CustomSkillsDir $ClaudeSkillsDir
+            }
         }
     }
 
     Write-Host ""
-    Write-Host "Next step: restart Codex or Claude Code so the new skill is loaded."
+    Write-Host "Next step: restart Codex or Claude Code so the new skills are loaded."
 }
 finally {
     if ($downloaded -and (Test-Path -LiteralPath $downloaded.Root)) {
